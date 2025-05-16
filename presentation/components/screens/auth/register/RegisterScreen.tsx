@@ -1,10 +1,20 @@
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import styles from "./Styles";
 import DefaultTextInput from "../../../DefaultTextInput";
 import DefaultRoundedButton from "../../../DefaultRoundedButton";
 import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../../navigator/MainStackNavigator";
 import { useState } from "react";
+import EmailValidator from "../../../../utils/EmailValidator";
 
 interface Props
   extends StackScreenProps<RootStackParamList, "RegisterScreen"> {}
@@ -17,70 +27,126 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const handleRegister = () => {
+    if (name === "") {
+      Alert.alert("Error", "El nombre no puede estar vacío");
+      return;
+    }
+    if (lastname === "") {
+      Alert.alert("Error", "El apellido no puede estar vacío");
+      return;
+    }
+    if (email === "") {
+      Alert.alert("Error", "El email no puede estar vacío");
+      return;
+    }
+    if (phone === "") {
+      Alert.alert("Error", "El teléfono no puede estar vacío");
+      return;
+    }
+    if (password === "") {
+      Alert.alert("Error", "La contraseña no puede estar vacía");
+      return;
+    }
+    if (confirmPassword === "") {
+      Alert.alert(
+        "Error",
+        "La confirmación de contraseña no puede estar vacía"
+      );
+      return;
+    }
+    if (!EmailValidator(email)) {
+      Alert.alert("Error", "El email no es válido");
+      return;
+    }
+    if (confirmPassword !== password) {
+      Alert.alert("Error", "Las contraseñas no coinciden");
+      return;
+    }
+    console.log(name);
+    console.log(lastname);
+    console.log(email);
+    console.log(phone);
+    console.log(password);
+    console.log(confirmPassword);
+  };
+
   return (
-    <View style={styles.container}>
-      <Image
-        source={require("../../../../../assets/city.jpg")}
-        style={styles.imageBackground}
-      />
-      <View style={styles.form}>
-        <TouchableOpacity onPress={() => navigation.pop()}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.container}>
           <Image
-            style={styles.back}
-            source={require("../../../../../assets/left_arrow.png")}
+            source={require("../../../../../assets/city.jpg")}
+            style={styles.imageBackground}
           />
-        </TouchableOpacity>
-        <Image
-          source={require("../../../../../assets/user.png")}
-          style={styles.imageUser}
-        />
+          <View style={styles.form}>
+            <TouchableOpacity onPress={() => navigation.pop()}>
+              <Image
+                style={styles.back}
+                source={require("../../../../../assets/left_arrow.png")}
+              />
+            </TouchableOpacity>
+            <Image
+              source={require("../../../../../assets/user.png")}
+              style={styles.imageUser}
+            />
 
-        <Text style={styles.textRegister}>REGISTRO</Text>
+            <Text style={styles.textRegister}>REGISTRO</Text>
 
-        <DefaultTextInput
-          icon={require("../../../../../assets/user.png")}
-          placeholder="Nombre"
-          onChangeText={setName}
-          value={name}
-        />
-        <DefaultTextInput
-          icon={require("../../../../../assets/user_image.png")}
-          placeholder="Apellido"
-          onChangeText={setLastname}
-          value={lastname}
-        />
-        <DefaultTextInput
-          icon={require("../../../../../assets/email.png")}
-          placeholder="Email"
-          onChangeText={setEmail}
-          value={email}
-          keyboardType="email-address"
-        />
-        <DefaultTextInput
-          icon={require("../../../../../assets/phone.png")}
-          placeholder="Teléfono"
-          onChangeText={setPhone}
-          value={phone}
-          keyboardType="numeric"
-        />
-        <DefaultTextInput
-          icon={require("../../../../../assets/password.png")}
-          placeholder="Contraseña"
-          onChangeText={setPassword}
-          value={password}
-        />
-        <DefaultTextInput
-          icon={require("../../../../../assets/password.png")}
-          placeholder="Confirmar contraseña"
-          onChangeText={setConfirmPassword}
-          value={confirmPassword}
-        />
-        <DefaultRoundedButton
-          text="REGISTRARSE"
-          onPress={() => {}}
-          backgroundColor="black"
-        />
-      </View>
-    </View>
+            <DefaultTextInput
+              icon={require("../../../../../assets/user.png")}
+              placeholder="Nombre"
+              onChangeText={setName}
+              value={name}
+            />
+            <DefaultTextInput
+              icon={require("../../../../../assets/user_image.png")}
+              placeholder="Apellido"
+              onChangeText={setLastname}
+              value={lastname}
+            />
+            <DefaultTextInput
+              icon={require("../../../../../assets/email.png")}
+              placeholder="Email"
+              onChangeText={setEmail}
+              value={email}
+              keyboardType="email-address"
+            />
+            <DefaultTextInput
+              icon={require("../../../../../assets/phone.png")}
+              placeholder="Teléfono"
+              onChangeText={setPhone}
+              value={phone}
+              keyboardType="numeric"
+            />
+            <DefaultTextInput
+              icon={require("../../../../../assets/password.png")}
+              placeholder="Contraseña"
+              onChangeText={setPassword}
+              value={password}
+              secureTextEntry={true}
+            />
+            <DefaultTextInput
+              icon={require("../../../../../assets/password.png")}
+              placeholder="Confirmar contraseña"
+              onChangeText={setConfirmPassword}
+              value={confirmPassword}
+              secureTextEntry={true}
+            />
+            <DefaultRoundedButton
+              text="REGISTRARSE"
+              onPress={handleRegister}
+              backgroundColor="black"
+            />
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
