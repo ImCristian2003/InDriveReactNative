@@ -7,6 +7,18 @@ import { RootStackParamList } from "../../../../navigator/MainStackNavigator";
 import styles from "./Styles";
 import { useState } from "react";
 import EmailValidator from "../../../../utils/EmailValidator";
+import { ApiRequestHandler } from "../../../../../data/sources/remote/api/ApiRequestHandler";
+import { AuthResponse } from "../../../../../domain/models/AuthResponse";
+import {
+  defaultErrorResponse,
+  ErrorResponse,
+} from "../../../../../domain/models/ErrorResponse";
+import { LoginViewModel } from "./LoginViewModel";
+import { LoginUseCase } from "../../../../../domain/useCases/auth/LoginUseCase";
+import { AuthService } from "../../../../../data/sources/remote/services/AuthServices";
+import { AuthRepositoryImpl } from "../../../../../data/repository/AuthRepositoryImpl";
+import { container } from "../../../../../di/container";
+import { useAuth } from "../../../../hooks/useAuth";
 
 interface Props extends StackScreenProps<RootStackParamList, "LoginScreen"> {}
 
@@ -16,7 +28,10 @@ export default function LoginScreen({ navigation, route }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const loginViewModel = container.resolve("loginViewModel");
+  const { authResponse, saveAuthSession } = useAuth();
+
+  const handleLogin = async () => {
     if (email === "" || password === "") {
       Alert.alert("Error", "El email y el password no pueden estar vacíos");
       return;
@@ -24,8 +39,16 @@ export default function LoginScreen({ navigation, route }: Props) {
     if (!EmailValidator(email)) {
       Alert.alert("Error", "El email no es valido");
     }
-    // console.log(email);
-    // console.log(password);
+
+    const response = await loginViewModel.login(email, password);
+
+    if ("token" in response) {
+      // LOGIN EXITOSO
+      saveAuthSession(response);
+      console.log("RESPONSE ", "Login exitoso");
+    }
+
+    console.log("RESPONSE ", response);
   };
 
   return (

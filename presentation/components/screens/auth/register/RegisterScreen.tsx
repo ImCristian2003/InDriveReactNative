@@ -15,6 +15,8 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { RootStackParamList } from "../../../../navigator/MainStackNavigator";
 import { useState } from "react";
 import EmailValidator from "../../../../utils/EmailValidator";
+import { container } from "../../../../../di/container";
+import { RegisterViewModel } from "./RegisterViewModel";
 
 interface Props
   extends StackScreenProps<RootStackParamList, "RegisterScreen"> {}
@@ -27,7 +29,10 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleRegister = () => {
+  const registerViewModel: RegisterViewModel =
+    container.resolve("registerViewModel");
+
+  const handleRegister = async () => {
     if (name === "") {
       Alert.alert("Error", "El nombre no puede estar vacío");
       return;
@@ -63,12 +68,14 @@ export default function RegisterScreen({ navigation, route }: Props) {
       Alert.alert("Error", "Las contraseñas no coinciden");
       return;
     }
-    console.log(name);
-    console.log(lastname);
-    console.log(email);
-    console.log(phone);
-    console.log(password);
-    console.log(confirmPassword);
+    const response = await registerViewModel.register({
+      name,
+      lastname,
+      email,
+      phone,
+      password,
+    });
+    console.log("Response: ", response);
   };
 
   return (
